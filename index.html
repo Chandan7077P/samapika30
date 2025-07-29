@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Happy Birthday, Beautiful 💛</title>
+    
+    <!-- External Libraries -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Satoshi:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Global Variables */
+        :root {
+            --text-gradient: linear-gradient(135deg, #f8fafc, #f1f5f9, #fce7f3);
+            --button-gradient: linear-gradient(135deg, #ec4899, #dc2626);
+            --glass-bg: rgba(15, 15, 15, 0.4);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Base Styles - NO SCROLL */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            font-family: 'Satoshi', sans-serif;
+            overflow: hidden; /* Remove all scrolling */
+            height: 100vh;
+            width: 100vw;
+            color: #f1f5f9;
+            position: fixed; /* Prevent any scrolling on mobile */
+            touch-action: manipulation; /* Optimize touch interactions */
+        }
+
+        /* Countdown Overlay - Mobile Optimized */
+        .countdown-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(ellipse at center, #1a0033 0%, #0a0015 50%, #000000 100%);
+            transition: opacity 1s ease-out, visibility 1s ease-out;
+            padding: 1rem;
+        }
+
+        .countdown-overlay.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .countdown-container {
+            text-align: center;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 2rem 1.5rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+            width: 95vw;
+            max-width: 380px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .countdown-title {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            font-size: 1.8rem;
+            background: var(--text-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.8rem;
+            line-height: 1.3;
+        }
+
+        .countdown-subtitle {
+            font-size: 0.9rem;
+            color: #f1f5f9;
+            opacity: 0.8;
+            margin-bottom: 1.5rem;
+            line-height: 1.4;
+        }
+
+        /* Single Row Countdown Timer - Updated */
+        .countdown-timer {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.8rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .countdown-item {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 0.8rem 0.4rem;
+            backdrop-filter: blur(10px);
+            min-height: 70px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .countdown-number {
+            font-family: 'Playfair Display', serif;  
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #ff69b4;
+            text-shadow: 0 0 10px rgba(255, 105, 180, 0.5);
+            margin-bottom: 0.2rem;
+            line-height: 1;
+        }
+
+        .countdown-label {
+            font-size: 0.65rem;
+            color: #f1f5f9;
+            opacity: 0.7;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            line-height: 1;
+        }
+
+        .countdown-message {
+            font-size: 0.8rem;
+            color: #f1f5f9;
+            opacity: 0.6;
+            line-height: 1.4;
+            padding: 0 0.5rem;
+        }
+
+        /* Mobile Portrait Specific - Keep single row */
+        @media (max-width: 480px) and (orientation: portrait) {
+            .countdown-container {
+                padding: 1.5rem 1rem;
+                max-width: 350px;
+            }
+            
+            .countdown-title {
+                font-size: 1.6rem;
+                margin-bottom: 0.6rem;
+            }
+            
+            .countdown-subtitle {
+                font-size: 0.85rem;
+                margin-bottom: 1.2rem;
+            }
+            
+            .countdown-timer {
+                gap: 0.5rem;
+                margin-bottom: 1.2rem;
+            }
+            
+            .countdown-item {
+                padding: 0.6rem 0.2rem;
+                min-height: 65px;
+            }
+            
+            .countdown-number {
+                font-size: 1.3rem;
+            }
+            
+            .countdown-label {
+                font-size: 0.6rem;
+            }
+            
+            .countdown-message {
+                font-size: 0.75rem;
+                padding: 0 0.2rem;
+            }
+        }
+
+        /* Mobile Landscape Specific - Keep single row */
+        @media (max-width: 768px) and (orientation: landscape) {
+            .countdown-container {
+                padding: 1.5rem;
+                max-width: 500px;
+                max-height: 85vh;
+            }
+            
+            .countdown-timer {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 0.4rem;
+            }
+            
+            .countdown-item {
+                min-height: 55px;
+                padding: 0.6rem 0.2rem;
+            }
+            
+            .countdown-number {
+                font-size: 1.2rem;
+            }
+            
+            .countdown-title {
+                font-size: 1.5rem;
+            }
+        }
+
+        /* Extra Small Screens - Keep single row */
+        @media (max-width: 320px) {
+            .countdown-container {
+                padding: 1.2rem 0.8rem;
+                max-width: 300px;
+            }
+            
+            .countdown-title {
+                font-size: 1.4rem;
+            }
+            
+            .countdown-item {
+                min-height: 60px;
+                padding: 0.5rem 0.1rem;
+            }
+            
+            .countdown-number {
+                font-size: 1.1rem;
+            }
+            
+            .countdown-label {
+                font-size: 0.55rem;
+            }
+        }
+
+        /* Touch Optimization */
+        .countdown-container * {
+            -webkit-tap-highlight-color: transparent;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        /* Countdown Background Elements */
+        .countdown-stars {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .countdown-sparkles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        /* Magical Cosmic Background */
+        .cosmic-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -2;
+            background: radial-gradient(ellipse at center, #1a0033 0%, #0a0015 50%, #000000 100%);
+            overflow: hidden;
+        }
+
+        /* Twinkling Stars */
+        .stars {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: transparent;
+        }
+
+        .star {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            animation: twinkle 2s infinite;
+        }
+
+        .star:nth-child(odd) {
+            animation-delay: 1s;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+
+        /* Floating Pink Hearts */
+        .heart-particle {
+            position: absolute;
+            color: #ff69b4;
+            font-size: 12px;
+            animation: float-heart 8s infinite linear;
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        @keyframes float-heart {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.7;
+            }
+            90% {
+                opacity: 0.7;
+            }
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* Magical Sparkles */
+        .sparkle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #ff69b4;
+            border-radius: 50%;
+            animation: sparkle 3s infinite;
+        }
+
+        @keyframes sparkle {
+            0%, 100% {
+                opacity: 0;
+                transform: scale(0);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1);
+                box-shadow: 0 0 10px #ff69b4;
+            }
+        }
+
+        /* Fairy-like Moving Particles */
+        .fairy {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: radial-gradient(circle, #ff69b4 0%, #ff1493 100%);
+            border-radius: 50%;
+            box-shadow: 0 0 6px #ff69b4;
+            animation: fairy-movement 12s infinite linear;
+        }
+
+        @keyframes fairy-movement {
+            0% {
+                transform: translate(0, 100vh) scale(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translate(50vw, -50px) scale(0);
+                opacity: 0;
+            }
+        }
+
+        /* Progress Bar - Mobile Optimized */
+        .progress-container {
+            position: fixed;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80vw;
+            max-width: 300px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 20%;
+            background: var(--button-gradient);
+            border-radius: 10px;
+            transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Typography */
+        .heading {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            background: var(--text-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.2;
+        }
+
+        /* Main Container - Mobile Optimized */
+        .main-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        /* Glass Cards - Mobile Optimized */
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 2rem 1.5rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            width: 95vw;
+            max-width: 400px;
+            max-height: 85vh;
+            text-align: center;
+            opacity: 0;
+            transform: translateY(50px) scale(0.9);
+            overflow-y: auto;
+        }
+
+        .glass-card.active {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Buttons - Mobile Optimized */
+        .gradient-btn {
+            background: var(--button-gradient);
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 50px;
+            font-family: 'Satoshi', sans-serif;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(236, 72, 153, 0.3);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            margin-top: 1.5rem;
+            touch-action: manipulation;
+            min-height: 48px;
+        }
+
+        .gradient-btn:hover, .gradient-btn:active {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 0 25px rgba(236, 72, 153, 0.4);
+        }
+
+        /* Bento Grid - Mobile Optimized */
+        .bento-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 0.8rem;
+            margin: 1.5rem 0;
+        }
+
+        .bento-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 1rem;
+            backdrop-filter: blur(10px);
+            transition: transform 0.3s ease;
+        }
+
+        .bento-card:active {
+            transform: translateY(-3px);
+        }
+
+        /* Polaroid - Updated to 3:4 Aspect Ratio */
+        .polaroid {
+            background: white;
+            padding: 15px 15px 40px 15px;
+            border-radius: 6px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            transform: rotate(-2deg);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            margin: 1.5rem auto;
+            width: fit-content;
+        }
+
+        .polaroid:active {
+            transform: rotate(0deg) scale(1.02);
+        }
+
+        .polaroid img {
+            width: 240px;
+            height: 320px; /* 3:4 aspect ratio */
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        /* Mobile responsive for polaroid */
+        @media (max-width: 480px) {
+            .polaroid img {
+                width: 180px;
+                height: 240px; /* Maintains 3:4 ratio on mobile */
+            }
+        }
+
+        .polaroid-caption {
+            text-align: center;
+            margin-top: 10px;
+            color: #333;
+            font-family: 'Satoshi', sans-serif;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        /* Mobile Typography Adjustments */
+        .mobile-heading {
+            font-size: 2.5rem;
+        }
+
+        .mobile-subheading {
+            font-size: 2rem;
+        }
+
+        .mobile-text {
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+
+        /* Animations */
+        .pulse-heart {
+            animation: pulse-heart 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse-heart {
+            0%, 100% {
+                transform: scale(1);
+                filter: drop-shadow(0 0 8px rgba(255, 100, 150, 0.5));
+            }
+            50% {
+                transform: scale(1.08);
+                filter: drop-shadow(0 0 15px rgba(255, 100, 150, 0.8));
+            }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Final Message */
+        .final-message {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 1s cubic-bezier(0.4, 0, 0.2, 1);
+            margin-top: 1.5rem;
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+
+        .final-message.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Ensure no scrolling on any element */
+        * {
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* Disable text selection and context menu on mobile */
+        body {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            -webkit-touch-callout: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Countdown Overlay -->
+    <div class="countdown-overlay" id="countdownOverlay">
+        <div class="countdown-stars" id="countdownStars"></div>
+        <div class="countdown-sparkles" id="countdownSparkles"></div>
+        <div class="countdown-container">
+            <div class="text-4xl mb-4 pulse-heart">🎂</div>
+            <h1 class="countdown-title">Something Special Awaits...</h1>
+            <p class="countdown-subtitle">Your birthday surprise unlocks in:</p>
+            <div class="countdown-timer">
+                <div class="countdown-item">
+                    <div class="countdown-number" id="days">00</div>
+                    <div class="countdown-label">Days</div>
+                </div>
+                <div class="countdown-item">
+                    <div class="countdown-number" id="hours">00</div>
+                    <div class="countdown-label">Hours</div>
+                </div>
+                <div class="countdown-item">
+                    <div class="countdown-number" id="minutes">00</div>
+                    <div class="countdown-label">Minutes</div>
+                </div>
+                <div class="countdown-item">
+                    <div class="countdown-number" id="seconds">00</div>
+                    <div class="countdown-label">Seconds</div>
+                </div>
+            </div>
+            <p class="countdown-message">A magical birthday experience is being prepared just for you ✨</p>
+        </div>
+    </div>
+
+    <!-- Magical Cosmic Background -->
+    <div class="cosmic-bg">
+        <div class="stars" id="stars"></div>
+        <div id="heartParticles"></div>
+        <div id="sparkles"></div>
+        <div id="fairies"></div>
+    </div>
+    
+    <!-- Progress Bar -->
+    <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+    
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Step 1: Welcome -->
+        <div class="glass-card active" id="step1">
+            <div class="text-6xl mb-4 pulse-heart">💛</div>
+            <h1 class="heading mobile-heading mb-4">Hey Beautiful,</h1>
+            <p class="mobile-text text-gray-300 mb-6">
+                I built a little world for you, just to bring a smile to your face on your special day.
+            </p>
+            <button class="gradient-btn" onclick="nextStep(2)">Let's Begin</button>
+        </div>
+        
+        <!-- Step 2: Birthday Message -->
+        <div class="glass-card hidden" id="step2">
+            <div class="text-6xl mb-4">🎉</div>
+            <h1 class="heading mobile-heading mb-4">Happy Birthday!</h1>
+            <p class="mobile-text text-gray-300 mb-6">
+                Another year of you making the world brighter. Your existence is a gift, and I'm so lucky to find you.
+            </p>
+            <button class="gradient-btn" onclick="nextStep(3)">There's more...</button>
+        </div>
+        
+        <!-- Step 3: Reasons Why -->
+        <div class="glass-card hidden" id="step3">
+            <h1 class="heading mobile-subheading mb-6">A Few Things I Adore About You</h1>
+            <div class="bento-grid">
+                <div class="bento-card">
+                    <h3 class="text-lg font-bold mb-2">✨ Your Unmatched Kindness</h3>
+                    <p class="text-gray-300 text-sm">The genuine warmth you show to me is something truly rare and beautiful.</p>
+                </div>
+                <div class="bento-card">
+                    <h3 class="text-lg font-bold mb-2">😊 Your Smile</h3>
+                    <p class="text-gray-300 text-sm">It's a work of art.</p>
+                </div>
+                <div class="bento-card">
+                    <h3 class="text-lg font-bold mb-2">🌟 Your Radiant Spirit</h3>
+                    <p class="text-gray-300 text-sm">Your passion for life is truly generous. Being around you makes everything feel more exciting and possible.</p>
+                </div>
+            </div>
+            <button class="gradient-btn" onclick="nextStep(4)">Remember this?</button>
+        </div>
+        
+        <!-- Step 4: Memory -->
+        <div class="glass-card hidden" id="step4">
+            <h1 class="heading mobile-subheading mb-4">That One Time...</h1>
+            <div class="polaroid" id="polaroid">
+                <img src="https://i.ibb.co/6Z6XgCg/crush.webp" alt="Our favorite memory">
+                <div class="polaroid-caption">Our favorite memory.</div>
+            </div>
+            <p class="mobile-text text-gray-300 mb-6">
+                Every moment with you feels like a scene from a movie I'd watch on repeat.
+            </p>
+            <button class="gradient-btn" onclick="nextStep(5)">One last thing...</button>
+        </div>
+        
+        <!-- Step 5: Final Wish -->
+        <div class="glass-card hidden" id="step5">
+            <div class="text-6xl mb-4">🎂</div>
+            <h1 class="heading mobile-subheading mb-4">My Wish For You</h1>
+            <p class="mobile-text text-gray-300 mb-6">
+                May this year bring you all the love, success, and pure happiness you so rightfully deserve. May your dreams soar higher than ever.
+            </p>
+            <button class="gradient-btn" id="celebrateBtn" onclick="celebrate()">Click Here!</button>
+            <div class="final-message" id="finalMessage">
+                Happy Birthday, Samapika 💛
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ========== COUNTDOWN CONFIGURATION ==========
+        // Set your target date and time here (Odisha India Time Zone - IST)
+        // Format: Year, Month (0-11), Day, Hour (24-hour), Minute, Second
+        const targetDate = new Date(2025, 6, 30, 0, 0, 0); // July 30, 2025 at 6:00 PM IST
+        
+        // Global variables
+        let currentStep = 1;
+        let countdownInterval;
+        
+        // Prevent scrolling and zooming on mobile
+        document.addEventListener('touchmove', function(e) {
+            e.preventDefault();
+        }, { passive: false });
+        
+        document.addEventListener('gesturestart', function(e) {
+            e.preventDefault();
+        });
+
+        // ========== IMAGE CUSTOMIZATION FUNCTIONS ==========
+        function updatePolaroidImage(imageUrl, caption) {
+            const polaroidImg = document.querySelector('#polaroid img');
+            const polaroidCaption = document.querySelector('.polaroid-caption');
+            
+            if (polaroidImg) {
+                polaroidImg.src = imageUrl;
+                polaroidImg.alt = caption;
+            }
+            if (polaroidCaption) {
+                polaroidCaption.textContent = caption;
+            }
+        }
+
+        function addImageToStep(stepNumber, imageUrl, imageAlt, position = 'top') {
+            const step = document.getElementById(`step${stepNumber}`);
+            if (!step) return;
+            
+            const img = document.createElement('img');
+            img.src = imageUrl;
+            img.alt = imageAlt;
+            img.style.cssText = `
+                max-width: 200px;
+                max-height: 150px;
+                border-radius: 12px;
+                margin: 1rem auto;
+                display: block;
+                object-fit: cover;
+                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            `;
+            
+            if (position === 'top') {
+                step.insertBefore(img, step.firstChild.nextSibling);
+            } else {
+                step.appendChild(img);
+            }
+        }
+
+        // ========== CUSTOMIZE YOUR IMAGES HERE ==========
+        // Uncomment and modify these lines to add your images:
+        updatePolaroidImage('https://cdn.jsdelivr.net/gh/Chandan7077P/samapika30@main/1753809454762.jpg', 'Our Beautiful Memory ');
+        // addImageToStep(1, 'YOUR_IMAGE_URL_HERE', 'Welcome image');
+        // addImageToStep(2, 'YOUR_IMAGE_URL_HERE', 'Birthday image');
+
+        // Countdown Functions
+        function startCountdown() {
+            updateCountdown(); // Initial update
+            countdownInterval = setInterval(updateCountdown, 1000);
+        }
+
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const distance = targetDate.getTime() - now;
+
+            if (distance < 0) {
+                // Countdown finished - reveal the main page
+                clearInterval(countdownInterval);
+                revealMainPage();
+                return;
+            }
+
+            // Calculate time units
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            // Update display
+            document.getElementById('days').textContent = days.toString().padStart(2, '0');
+            document.getElementById('hours').textContent = hours.toString().padStart(2, '0');
+            document.getElementById('minutes').textContent = minutes.toString().padStart(2, '0');
+            document.getElementById('seconds').textContent = seconds.toString().padStart(2, '0');
+        }
+
+        function revealMainPage() {
+            const overlay = document.getElementById('countdownOverlay');
+            overlay.classList.add('hidden');
+            
+            // Start the main page animations
+            setTimeout(() => {
+                createMagicalBackground();
+            }, 1000);
+        }
+
+        // Create countdown background elements
+        function createCountdownBackground() {
+            createCountdownStars();
+            createCountdownSparkles();
+        }
+
+        function createCountdownStars() {
+            const starsContainer = document.getElementById('countdownStars');
+            const numStars = 80;
+            
+            for (let i = 0; i < numStars; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.width = Math.random() * 2 + 1 + 'px';
+                star.style.height = star.style.width;
+                star.style.animationDelay = Math.random() * 3 + 's';
+                star.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                starsContainer.appendChild(star);
+            }
+        }
+
+        function createCountdownSparkles() {
+            const sparkleContainer = document.getElementById('countdownSparkles');
+            
+            function addCountdownSparkle() {
+                const sparkle = document.createElement('div');
+                sparkle.className = 'sparkle';
+                sparkle.style.left = Math.random() * 100 + '%';
+                sparkle.style.top = Math.random() * 100 + '%';
+                sparkle.style.animationDelay = Math.random() * 2 + 's';
+                sparkle.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                sparkleContainer.appendChild(sparkle);
+                
+                setTimeout(() => {
+                    if (sparkle.parentNode) {
+                        sparkle.parentNode.removeChild(sparkle);
+                    }
+                }, 5000);
+            }
+            
+            setInterval(addCountdownSparkle, 800);
+        }
+
+        // Create magical background elements for main page
+        function createMagicalBackground() {
+            createStars();
+            createHeartParticles();
+            createSparkles();
+            createFairies();
+        }
+
+        // Create twinkling stars
+        function createStars() {
+            const starsContainer = document.getElementById('stars');
+            const numStars = 150;
+            
+            for (let i = 0; i < numStars; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.width = Math.random() * 2 + 1 + 'px';
+                star.style.height = star.style.width;
+                star.style.animationDelay = Math.random() * 3 + 's';
+                star.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                starsContainer.appendChild(star);
+            }
+        }
+
+        // Create floating pink heart particles
+        function createHeartParticles() {
+            const heartContainer = document.getElementById('heartParticles');
+            
+            function addHeartParticle() {
+                const heart = document.createElement('div');
+                heart.className = 'heart-particle';
+                heart.innerHTML = '💖';
+                heart.style.left = Math.random() * 100 + '%';
+                heart.style.animationDuration = (Math.random() * 4 + 6) + 's';
+                heart.style.animationDelay = Math.random() * 2 + 's';
+                heartContainer.appendChild(heart);
+                
+                setTimeout(() => {
+                    if (heart.parentNode) {
+                        heart.parentNode.removeChild(heart);
+                    }
+                }, 10000);
+            }
+            
+            setInterval(addHeartParticle, 800);
+        }
+
+        // Create magical sparkles
+        function createSparkles() {
+            const sparkleContainer = document.getElementById('sparkles');
+            
+            function addSparkle() {
+                const sparkle = document.createElement('div');
+                sparkle.className = 'sparkle';
+                sparkle.style.left = Math.random() * 100 + '%';
+                sparkle.style.top = Math.random() * 100 + '%';
+                sparkle.style.animationDelay = Math.random() * 2 + 's';
+                sparkle.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                sparkleContainer.appendChild(sparkle);
+                
+                setTimeout(() => {
+                    if (sparkle.parentNode) {
+                        sparkle.parentNode.removeChild(sparkle);
+                    }
+                }, 5000);
+            }
+            
+            setInterval(addSparkle, 500);
+        }
+
+        // Create fairy-like moving particles
+        function createFairies() {
+            const fairyContainer = document.getElementById('fairies');
+            
+            function addFairy() {
+                const fairy = document.createElement('div');
+                fairy.className = 'fairy';
+                fairy.style.left = Math.random() * 100 + '%';
+                fairy.style.animationDuration = (Math.random() * 6 + 8) + 's';
+                fairy.style.animationDelay = Math.random() * 3 + 's';
+                fairyContainer.appendChild(fairy);
+                
+                setTimeout(() => {
+                    if (fairy.parentNode) {
+                        fairy.parentNode.removeChild(fairy);
+                    }
+                }, 15000);
+            }
+            
+            setInterval(addFairy, 1200);
+        }
+        
+        // Step navigation
+        function nextStep(step) {
+            document.getElementById(`step${currentStep}`).classList.add('hidden');
+            document.getElementById(`step${currentStep}`).classList.remove('active');
+            
+            setTimeout(() => {
+                document.getElementById(`step${step}`).classList.remove('hidden');
+                setTimeout(() => {
+                    document.getElementById(`step${step}`).classList.add('active');
+                }, 50);
+            }, 400);
+            
+            updateProgress(step);
+            currentStep = step;
+        }
+        
+        // Update progress bar
+        function updateProgress(step) {
+            const progress = (step / 5) * 100;
+            document.getElementById('progressBar').style.width = `${progress}%`;
+        }
+        
+        // Celebration sequence
+        function celebrate() {
+            const celebrateBtn = document.getElementById('celebrateBtn');
+            const finalMessage = document.getElementById('finalMessage');
+            
+            celebrateBtn.style.opacity = '0';
+            celebrateBtn.disabled = true;
+            
+            setTimeout(() => {
+                finalMessage.classList.add('show');
+            }, 500);
+            
+            setTimeout(() => {
+                startConfetti();
+            }, 1000);
+        }
+        
+        // Confetti animation
+        function startConfetti() {
+            confetti({
+                particleCount: 80,
+                spread: 70,
+                origin: { x: 0.1, y: 1 }
+            });
+            
+            confetti({
+                particleCount: 80,
+                spread: 70,
+                origin: { x: 0.9, y: 1 }
+            });
+            
+            let confettiInterval = setInterval(() => {
+                confetti({
+                    particleCount: 30,
+                    spread: 60,
+                    origin: { x: Math.random(), y: 0 }
+                });
+                
+                confetti({
+                    particleCount: 8,
+                    spread: 50,
+                    origin: { x: Math.random(), y: 0 },
+                    shapes: ['text'],
+                    scalar: 1.5,
+                    texts: ['❤️', '💖', '✨', '🎉']
+                });
+            }, 400);
+            
+            setTimeout(() => {
+                clearInterval(confettiInterval);
+            }, 5000);
+        }
+        
+        // Mobile-optimized polaroid effect
+        document.addEventListener('DOMContentLoaded', function() {
+            const polaroid = document.getElementById('polaroid');
+            if (polaroid) {
+                polaroid.addEventListener('touchstart', function(e) {
+                    polaroid.style.transform = 'rotate(0deg) scale(1.02)';
+                });
+                
+                polaroid.addEventListener('touchend', function() {
+                    polaroid.style.transform = 'rotate(-2deg)';
+                });
+            }
+        });
+        
+        // Initialize everything when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // Start countdown and countdown background
+            createCountdownBackground();
+            startCountdown();
+            
+            // Add staggered animation to bento cards
+            gsap.set('.bento-card', { opacity: 0, y: 15 });
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.target.id === 'step3' && entry.isIntersecting) {
+                        gsap.to('.bento-card', {
+                            opacity: 1,
+                            y: 0,
+                            duration: 0.5,
+                            stagger: 0.15,
+                            ease: "power2.out"
+                        });
+                    }
+                });
+            });
+            
+            observer.observe(document.getElementById('step3'));
+        });
+    </script>
+</body>
+</html>
